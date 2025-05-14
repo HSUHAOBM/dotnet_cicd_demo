@@ -38,3 +38,9 @@ dotnet sln DemoSolution.sln add DemoWebApi.Tests/DemoWebApi.Tests.csproj
 ```bash
 dotnet test DemoSolution.sln
 ```
+
+清除本地資源 & 重抓
+```bash
+dotnet nuget locals all --clear
+dotnet restore
+```
