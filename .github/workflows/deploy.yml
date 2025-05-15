@@ -42,11 +42,28 @@ jobs:
           dotnet sonarscanner begin \
             /k:"${{ secrets.SONAR_PROJECT_KEY }}" \
             /o:"${{ secrets.SONAR_ORG }}" \
-            /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.host.url="https://sonarcloud.io"
 
           dotnet build DemoSolution.sln
 
           dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
+      # 檢查 SonarCloud 分析結果（是否通過 Quality Gate）
+      - name: Check SonarCloud Quality Gate
+        id: quality-gate
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          echo "等待分析結果..."
+          sleep 10
+          STATUS=$(curl -s -u "${{ secrets.SONAR_TOKEN }}:" "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ secrets.SONAR_PROJECT_KEY }}" | jq -r '.projectStatus.status')
+          echo "Quality Gate status: $STATUS"
+          echo "gate_status=$STATUS" >> $GITHUB_OUTPUT
+          if [ "$STATUS" != "OK" ]; then
+            echo "❌ Quality Gate 未通過，結束流程"
+            exit 1
+          fi
 
       # 部署到 Linode
       - name: Deploy to Linode
@@ -81,15 +98,34 @@ jobs:
             ]
           }' ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      # Slack 通知失敗
-      - name: Slack Notify Failure
-        if: failure()
+      # Slack 通知失敗 - 品質門檻未通過
+      - name: Slack Notify SonarCloud Failed
+        if: failure() && steps.quality-gate.outcome == 'failure'
         run: |
           curl -X POST -H 'Content-type: application/json' --data '{
             "attachments": [
               {
                 "color": "danger",
-                "title": "❌ .NET 8 CI/CD 失敗",
+                "title": "🚨 SonarCloud Quality Gate 未通過，CI/CD 中止",
+                "fields": [
+                  { "title": "Repo", "value": "${{ github.repository }}", "short": true },
+                  { "title": "Branch", "value": "${{ github.ref_name }}", "short": true },
+                  { "title": "Commit", "value": "<https://github.com/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>" },
+                  { "title": "作者", "value": "${{ github.actor }}" }
+                ]
+              }
+            ]
+          }' ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # Slack 通知失敗 - 其他原因
+      - name: Slack Notify Failure (Other)
+        if: failure() && steps.quality-gate.outcome != 'failure'
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "attachments": [
+              {
+                "color": "danger",
+                "title": "❌ .NET 8 CI/CD 失敗（非 SonarCloud 問題）",
                 "fields": [
                   { "title": "Repo", "value": "${{ github.repository }}", "short": true },
                   { "title": "Branch", "value": "${{ github.ref_name }}", "short": true },
