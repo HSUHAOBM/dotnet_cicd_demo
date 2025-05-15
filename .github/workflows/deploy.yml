@@ -31,6 +31,23 @@ jobs:
       - name: Run Tests
         run: dotnet test DemoWebApi.Tests/DemoWebApi.Tests.csproj --configuration Release --no-build --collect:"XPlat Code Coverage"
 
+      # SonarScanner 安全與品質分析
+      - name: SonarCloud Analyze (Security & Quality)
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          dotnet tool install --global dotnet-sonarscanner
+          export PATH="$PATH:$HOME/.dotnet/tools"
+
+          dotnet sonarscanner begin \
+            /k:"${{ secrets.SONAR_PROJECT_KEY }}" \
+            /o:"${{ secrets.SONAR_ORG }}" \
+            /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
+          dotnet build DemoSolution.sln
+
+          dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
       # 部署到 Linode
       - name: Deploy to Linode
         if: success()
