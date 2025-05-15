@@ -29,7 +29,7 @@ jobs:
 
       # 執行單元測試
       - name: Run Tests
-        run: dotnet test DemoSolution.Tests/DemoSolution.Tests.csproj --configuration Release --no-build --collect:"XPlat Code Coverage"
+        run: dotnet test DemoWebApi.Tests/DemoWebApi.Tests.csproj --configuration Release --no-build --collect:"XPlat Code Coverage"
 
       # 安全性掃描
       - name: Run .NET security analysis (optional)
