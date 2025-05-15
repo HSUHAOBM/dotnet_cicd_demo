@@ -21,15 +21,15 @@ jobs:
 
       # 還原相依套件
       - name: Restore dependencies
-        run: dotnet restore DemoWebApi.sln
+        run: dotnet restore DemoSolution.sln
 
       # 編譯專案
       - name: Build
-        run: dotnet build DemoWebApi.sln --configuration Release --no-restore
+        run: dotnet build DemoSolution.sln --configuration Release --no-restore
 
       # 執行單元測試
       - name: Run Tests
-        run: dotnet test DemoWebApi.Tests/DemoWebApi.Tests.csproj --configuration Release --no-build --collect:"XPlat Code Coverage"
+        run: dotnet test DemoSolution.Tests/DemoSolution.Tests.csproj --configuration Release --no-build --collect:"XPlat Code Coverage"
 
       # 安全性掃描
       - name: Run .NET security analysis (optional)
