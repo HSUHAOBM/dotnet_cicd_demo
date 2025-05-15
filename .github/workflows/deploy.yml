@@ -31,12 +31,6 @@ jobs:
       - name: Run Tests
         run: dotnet test DemoWebApi.Tests/DemoWebApi.Tests.csproj --configuration Release --no-build --collect:"XPlat Code Coverage"
 
-      # 安全性掃描
-      - name: Run .NET security analysis (optional)
-        run: |
-          dotnet tool install --global security-scan
-          security-scan DemoWebApi/
-
       # 部署到 Linode
       - name: Deploy to Linode
         if: success()
