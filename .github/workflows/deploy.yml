@@ -1,0 +1,90 @@
+name: Deploy .NET 8 API to Linode
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout 程式碼
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 安裝 .NET 8 SDK
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      # 還原相依套件
+      - name: Restore dependencies
+        run: dotnet restore DemoWebApi.sln
+
+      # 編譯專案
+      - name: Build
+        run: dotnet build DemoWebApi.sln --configuration Release --no-restore
+
+      # 執行單元測試
+      - name: Run Tests
+        run: dotnet test DemoWebApi.Tests/DemoWebApi.Tests.csproj --configuration Release --no-build --collect:"XPlat Code Coverage"
+
+      # 安全性掃描
+      - name: Run .NET security analysis (optional)
+        run: |
+          dotnet tool install --global security-scan
+          security-scan DemoWebApi/
+
+      # 部署到 Linode
+      - name: Deploy to Linode
+        if: success()
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.LINODE_HOST }}
+          username: ${{ secrets.LINODE_USERNAME }}
+          key: ${{ secrets.LINODE_SSHKEY }}
+          script: |
+            cd ${{ secrets.LINODE_PROJECT_PATH }}
+            git pull
+            docker compose down
+            docker compose up -d --build
+
+      # Slack 通知成功
+      - name: Slack Notify Success
+        if: success()
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "attachments": [
+              {
+                "color": "good",
+                "title": "✅ .NET 8 CI/CD 成功部署到 Linode",
+                "fields": [
+                  { "title": "Repo", "value": "${{ github.repository }}", "short": true },
+                  { "title": "Branch", "value": "${{ github.ref_name }}", "short": true },
+                  { "title": "Commit", "value": "<https://github.com/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>" },
+                  { "title": "作者", "value": "${{ github.actor }}" }
+                ]
+              }
+            ]
+          }' ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # Slack 通知失敗
+      - name: Slack Notify Failure
+        if: failure()
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "attachments": [
+              {
+                "color": "danger",
+                "title": "❌ .NET 8 CI/CD 失敗",
+                "fields": [
+                  { "title": "Repo", "value": "${{ github.repository }}", "short": true },
+                  { "title": "Branch", "value": "${{ github.ref_name }}", "short": true },
+                  { "title": "Commit", "value": "<https://github.com/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>" },
+                  { "title": "作者", "value": "${{ github.actor }}" }
+                ]
+              }
+            ]
+          }' ${{ secrets.SLACK_WEBHOOK_URL }}
