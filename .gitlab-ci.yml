@@ -1,0 +1,47 @@
+image: mcr.microsoft.com/dotnet/sdk:8.0
+
+stages:
+  - build
+  - test
+  - sonar
+  - notify
+
+before_script:
+  - dotnet restore
+
+build:
+  stage: build
+  script:
+    - dotnet build DemoSolution.sln --configuration Release --no-restore
+
+test:
+  stage: test
+  script:
+    - dotnet test DemoWebApi.Tests/DemoWebApi.Tests.csproj --configuration Release --no-build --collect:"XPlat Code Coverage"
+
+sonarqube:
+  stage: sonar
+  script:
+    - dotnet tool install --global dotnet-sonarscanner
+    - export PATH="$PATH:$HOME/.dotnet/tools"
+    - dotnet sonarscanner begin /k:"$SONAR_PROJECT_KEY" /d:sonar.host.url="$SONAR_HOST_URL" /d:sonar.login="$SONAR_TOKEN"
+    - dotnet build DemoSolution.sln
+    - dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
+
+notify_success:
+  stage: notify
+  when: on_success
+  script:
+    - |
+      curl -X POST -H "Content-type: application/json" --data "{
+        \"text\": \"✅ .NET 8 CI/CD 成功 🎉\\n📦 專案: $CI_PROJECT_PATH\\n🌿 分支: $CI_COMMIT_REF_NAME\\n🧑 作者: $GITLAB_USER_NAME\\n🔗 Job: $CI_JOB_URL\"
+      }" $SLACK_WEBHOOK_URL
+
+notify_failure:
+  stage: notify
+  when: on_failure
+  script:
+    - |
+      curl -X POST -H "Content-type: application/json" --data "{
+        \"text\": \"❌ .NET 8 CI/CD 失敗 🚨\\n📦 專案: $CI_PROJECT_PATH\\n🌿 分支: $CI_COMMIT_REF_NAME\\n🧑 作者: $GITLAB_USER_NAME\\n🔗 Job: $CI_JOB_URL\"
+      }" $SLACK_WEBHOOK_URL
