@@ -26,6 +26,7 @@ test:
 
 notify_success:
   stage: notify
+  before_script: []
   script:
     - |
       if [ "$CI_JOB_STATUS" = "success" ]; then
@@ -37,6 +38,7 @@ notify_success:
 
 notify_failure:
   stage: notify
+  before_script: []
   script:
     - |
       if [ "$CI_JOB_STATUS" = "failed" ]; then
