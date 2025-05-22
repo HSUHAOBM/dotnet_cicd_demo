@@ -18,6 +18,7 @@ test:
     - dotnet tool install --global dotnet-reportgenerator-globaltool
     - export PATH="$PATH:/root/.dotnet/tools"
     - reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:Html
+    - echo "SLACK_WEBHOOK_URL=$SLACK_WEBHOOK_URL"
   artifacts:
     paths:
       - coverage-report
