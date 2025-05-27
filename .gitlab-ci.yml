@@ -24,26 +24,18 @@ test:
       - coverage-report
     when: always
 
-notify_success:
+notify:
   stage: notify
-  before_script: []
-  script:
-    - |
-      if [ "$CI_JOB_STATUS" = "success" ]; then
-        curl -X POST -H "Content-type: application/json" --data "{
-          \"text\": \"✅ .NET 8 CI/CD 成功 🎉\\n📦 專案: $CI_PROJECT_PATH\\n🌿 分支: $CI_COMMIT_REF_NAME\\n🧑 作者: $GITLAB_USER_NAME\\n🔗 Job: $CI_JOB_URL\"
-        }" "$SLACK_WEBHOOK_URL"
-      fi
-  when: always
+  when: on_success
+  script: |
+    curl -X POST -H "Content-type: application/json" --data "{
+      \"text\": \"✅ GitLab CI 成功：\\n📦 專案: $CI_PROJECT_PATH\\n🌿 分支: $CI_COMMIT_REF_NAME\\n🧑 作者: $GITLAB_USER_NAME\\n🔗 Job: $CI_JOB_URL\"
+    }" $SLACK_WEBHOOK_URL
 
 notify_failure:
   stage: notify
-  before_script: []
-  script:
-    - |
-      if [ "$CI_JOB_STATUS" = "failed" ]; then
-        curl -X POST -H "Content-type: application/json" --data "{
-          \"text\": \"❌ .NET 8 CI/CD 失敗 🚨\\n📦 專案: $CI_PROJECT_PATH\\n🌿 分支: $CI_COMMIT_REF_NAME\\n🧑 作者: $GITLAB_USER_NAME\\n🔗 Job: $CI_JOB_URL\"
-        }" "$SLACK_WEBHOOK_URL"
-      fi
-  when: always
+  when: on_failure
+  script: |
+    curl -X POST -H "Content-type: application/json" --data "{
+      \"text\": \"❌ GitLab CI 失敗：\\n📦 專案: $CI_PROJECT_PATH\\n🌿 分支: $CI_COMMIT_REF_NAME\\n🧑 作者: $GITLAB_USER_NAME\\n🔗 Job: $CI_JOB_URL\"
+    }" $SLACK_WEBHOOK_URL
