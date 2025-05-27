@@ -44,6 +44,9 @@ dotnet add package coverlet.collector
 # 執行測試並產生覆蓋率報告
 dotnet test --collect:"XPlat Code Coverage"
 
+# 根目錄
+dotnet test --collect:"XPlat Code Coverage" --results-directory "TestResults"
+
 # 安裝報表工具
 dotnet tool install --global dotnet-reportgenerator-globaltool
 
