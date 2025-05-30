@@ -1,14 +1,14 @@
 # .NET 8 WebAPI CI/CD Demo
 
-使用 ASP.NET Core 8 建立 Web API，並透過 GitHub Actions 實現完整的 CI/CD 流程，包含：
+使用 ASP.NET Core 8 建立 Web API，實現完整的 CI/CD 流程，包含：
 
-* ASP.NET Core 8
-* xUnit 單元測試
-* Coverlet 覆蓋率統計
-* GitHub Actions 自動化部署
-* Slack 部署成功／失敗通知
-* SonarCloud 程式碼品質與安全性分析
-
+- ASP.NET Core 8
+- xUnit 單元測試
+- Coverlet 覆蓋率統計
+- Compose 容器化
+- CI/CD：
+    - GitHub Actions：執行單元測試、覆蓋率分析、SonarCloud 程式碼品質檢查，自動部署至 Linode 並發送 Slack 通知
+    - GitLab CI（內網）：執行單元測試、產出覆蓋率報告、整合內網 SonarQube 掃描並發送 Slack 通知
 ---
 
 ## 建立與加入測試專案
