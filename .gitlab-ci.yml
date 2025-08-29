@@ -2,14 +2,21 @@ image: mcr.microsoft.com/dotnet/sdk:8.0
 
 stages:
   - test
+  - sonar
   - notify
 
-variables:
-  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
-
-before_script:
-  - dotnet restore DemoSolution.sln
-  - dotnet build DemoSolution.sln --configuration Release --no-restore
+sonarqube:
+  stage: sonar
+  before_script: []  # 覆蓋全域 before_script，避免重複 build
+  script:
+    - dotnet tool install --global dotnet-sonarscanner
+    - export PATH="$PATH:$HOME/.dotnet/tools"
+    - dotnet restore DemoSolution.sln
+    - dotnet sonarscanner begin /k:"$SONAR_PROJECT_KEY" /d:sonar.host.url="$SONAR_HOST_URL" /d:sonar.login="$SONAR_TOKEN"
+    - dotnet build DemoSolution.sln --configuration Release --no-restore
+    - dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
+  only:
+    - main
 
 test:
   stage: test
@@ -23,6 +30,13 @@ test:
     paths:
       - coverage-report
     when: always
+
+variables:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+
+before_script:
+  - dotnet restore DemoSolution.sln
+  - dotnet build DemoSolution.sln --configuration Release --no-restore
 
 notify:
   stage: notify
