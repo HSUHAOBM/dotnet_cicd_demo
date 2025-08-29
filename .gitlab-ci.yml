@@ -9,6 +9,7 @@ sonarqube:
   stage: sonar
   before_script: []  # 覆蓋全域 before_script，避免重複 build
   script:
+    - apt-get update && apt-get install -y openjdk-17-jre
     - dotnet tool install --global dotnet-sonarscanner
     - export PATH="$PATH:$HOME/.dotnet/tools"
     - dotnet restore DemoSolution.sln
