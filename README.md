@@ -9,6 +9,24 @@
 - CI/CD：
     - GitHub Actions：執行單元測試、覆蓋率分析、SonarCloud 程式碼品質檢查，自動部署至 Linode 並發送 Slack 通知
     - GitLab CI（內網）：執行單元測試、產出覆蓋率報告、整合內網 SonarQube 掃描並發送 Slack 通知
+
+---
+
+## 快速測試
+### Docker 執行
+```bash
+docker compose up
+# 映射 port: 5000 → 容器 80
+```
+
+測試指令:
+```bash
+curl http://localhost:5000/api/sample
+curl http://localhost:5000/api/sample/0
+curl -X POST http://localhost:5000/api/sample -H "Content-Type: application/json" -d '"Orange"'
+curl http://localhost:5000/weatherforecast
+```
+
 ---
 
 ## 建立與加入測試專案
@@ -35,16 +53,19 @@ dotnet test -v n
 
 ## 覆蓋率統計（Coverlet + ReportGenerator）
 
-安裝 Coverlet 並產生測試覆蓋率報告，最後轉成 HTML 報表：
+### ⚠️ SonarCloud 覆蓋率整合注意事項
 
+**重要**: SonarCloud C# 分析器**僅支援 OpenCover 格式**，不支援預設的 Cobertura 格式!
+
+#### 本地測試用 (產生 HTML 報表)
 ```bash
 # 安裝 Coverlet
 dotnet add package coverlet.collector
 
-# 執行測試並產生覆蓋率報告
+# 執行測試並產生 Cobertura 格式覆蓋率報告 (本地查看用)
 dotnet test --collect:"XPlat Code Coverage"
 
-# 根目錄
+# 指定輸出目錄
 dotnet test --collect:"XPlat Code Coverage" --results-directory "TestResults"
 
 # 安裝報表工具
@@ -52,6 +73,18 @@ dotnet tool install --global dotnet-reportgenerator-globaltool
 
 # 產出 HTML 報表
 reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:"coverage-report" -reporttypes:Html
+```
+
+#### CI/CD 用 (整合 SonarCloud)
+
+⚠️ **重要**: SonarCloud 只支援 OpenCover 格式,需加上 `Format=opencover` 參數
+
+```bash
+# ✅ 正確
+dotnet test --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+
+# SonarCloud 參數
+/d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml"
 ```
 
 ---
