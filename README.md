@@ -125,15 +125,28 @@ GitHub Actions 會根據以下狀況主動推播通知到 Slack：
 
 ## 程式碼格式檢查（Code Style / Lint）
 
+### .editorconfig 設定檔
+
+`.editorconfig` 檔案，定義程式碼風格規則：
+
 檢查或自動修正程式碼風格：
 
 ```bash
-# 僅檢查，不修改
+# 僅檢查，不修改（簡潔輸出，只顯示警告以上問題）
 dotnet format DemoSolution.sln --verify-no-changes --severity warn
+
+# 僅檢查，不修改（詳細診斷，顯示所有格式問題）
+dotnet format DemoSolution.sln --verify-no-changes --verbosity diagnostic
 
 # 修正縮排、空白、括號等風格問題
 dotnet format DemoSolution.sln --severity warn
 ```
+
+**參數說明**：
+- `--severity warn`：只顯示 `warn` 和 `error` 等級的問題，不顯示 `info` 等級的問題，讓輸出更簡潔，專注於重要問題
+- `--verbosity diagnostic`：顯示所有詳細診斷資訊，包含所有等級的格式問題
+- `--verify-no-changes`：只檢查不修改檔案
+
 
 ---
 

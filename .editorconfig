@@ -1,0 +1,116 @@
+# .editorconfig file for consistent coding styles based on EIP system requirements
+
+root = true
+
+# 命名規則建議：
+# - 類別名稱使用 PascalCase
+# - 方法名稱使用 PascalCase
+# - 變數名稱使用 camelCase (單駝峰，第一個單字小寫)
+
+[*.cs]
+# 使用 Tab 作為縮排 (依照 EIP 系統開發要求)
+indent_style = tab
+# 設定縮排大小為 4 個字元
+indent_size = 4
+# Tab 大小設定為 4 個字元
+tab_width = 4
+# 使用 UTF-8 字符編碼
+charset = utf-8
+# 使用 CRLF (Windows 樣式) 行結尾
+end_of_line = crlf
+# 確保檔案末尾有一個換行符
+insert_final_newline = true
+# 移除任何行尾的多餘空格
+trim_trailing_whitespace = true
+
+# 變數命名規則 (改為使用 camelCase)
+dotnet_naming_rule.camel_case_for_variables.severity = warning
+dotnet_naming_rule.camel_case_for_variables.symbols = variables
+dotnet_naming_rule.camel_case_for_variables.style = camel_case_style
+dotnet_naming_symbols.variables.applicable_kinds = local,parameter,property,field,event
+dotnet_naming_symbols.variables.applicable_accessibilities = *
+dotnet_naming_style.camel_case_style.capitalization = camel_case
+
+# 特殊情況的例外處理 (例如事件處理器參數如 sender, e)
+dotnet_naming_rule.event_args_allowed.severity = none
+dotnet_naming_rule.event_args_allowed.symbols = event_args
+dotnet_naming_rule.event_args_allowed.style = camel_case_style
+dotnet_naming_symbols.event_args.applicable_kinds = parameter
+dotnet_naming_symbols.event_args.applicable_accessibilities = *
+dotnet_naming_symbols.event_args.required_modifiers = *
+
+# 類別與方法仍使用 PascalCase
+dotnet_naming_rule.class_and_methods_pascal_case.severity = warning
+dotnet_naming_rule.class_and_methods_pascal_case.symbols = class_and_methods
+dotnet_naming_rule.class_and_methods_pascal_case.style = pascal_case_style
+dotnet_naming_symbols.class_and_methods.applicable_kinds = class,struct,interface,enum,delegate,method
+dotnet_naming_symbols.class_and_methods.applicable_accessibilities = *
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+
+# 括號樣式 (依照 EIP 系統開發要求)
+csharp_new_line_before_open_brace = all
+csharp_space_between_method_declaration_parameter_list_parentheses = false
+csharp_space_between_method_call_parameter_list_parentheses = false
+
+# 運算子前後空格
+csharp_space_before_binary_operator = true
+csharp_space_after_binary_operator = true
+
+# 例外處理規範 (依照 EIP 系統開發要求使用 try-catch)
+dotnet_diagnostic.CA1031.severity = suggestion
+
+# 程式碼行長度限制 (100~120字元，依照 EIP 系統開發要求)
+max_line_length = 120
+
+[*.{htm,html,aspx,razor,cshtml}]
+# 使用空格作為縮排
+indent_style = space
+# 設定縮排大小為 4 個空格
+indent_size = 4
+# 使用 UTF-8 字符編碼
+charset = utf-8
+# 使用 CRLF (Windows 樣式) 行結尾
+end_of_line = crlf
+# 確保檔案末尾有一個換行符
+insert_final_newline = true
+# 移除任何行尾的多餘空格
+trim_trailing_whitespace = true
+
+[*.{js,css}]
+# 使用空格作為縮排
+indent_style = space
+# 設定縮排大小為 2 個空格
+indent_size = 2
+# 使用 UTF-8 字符編碼
+charset = utf-8
+# 使用 LF (Unix 樣式) 行結尾
+end_of_line = lf
+# 確保檔案末尾有一個換行符
+insert_final_newline = true
+# 移除任何行尾的多餘空格
+trim_trailing_whitespace = true
+
+[*.{json,xml}]
+# 使用空格作為縮排
+indent_style = space
+# 設定縮排大小為 2 個空格
+indent_size = 2
+# 使用 UTF-8 字符編碼
+charset = utf-8
+# 使用 LF (Unix 樣式) 行結尾
+end_of_line = lf
+# 確保檔案末尾有一個換行符
+insert_final_newline = true
+# 移除任何行尾的多餘空格
+trim_trailing_whitespace = true
+
+[*.md]
+# 不移除行尾的多餘空格（對 Markdown 格式化有用）
+trim_trailing_whitespace = false
+# 確保檔案末尾有一個換行符
+insert_final_newline = true
+
+[*]
+# 設定最大行長為 120 個字符
+max_line_length = 120
+
