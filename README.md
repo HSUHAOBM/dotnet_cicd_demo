@@ -16,15 +16,15 @@
 ### Docker 執行
 ```bash
 docker compose up
-# 映射 port: 5000 → 容器 80
+# 映射 port: 5500 → 容器 80
 ```
 
 測試指令:
 ```bash
-curl http://localhost:5000/api/sample
-curl http://localhost:5000/api/sample/0
-curl -X POST http://localhost:5000/api/sample -H "Content-Type: application/json" -d '"Orange"'
-curl http://localhost:5000/weatherforecast
+curl http://localhost:5500/api/sample
+curl http://localhost:5500/api/sample/0
+curl -X POST http://localhost:5500/api/sample -H "Content-Type: application/json" -d '"Orange"'
+curl http://localhost:5500/weatherforecast
 ```
 
 ---
