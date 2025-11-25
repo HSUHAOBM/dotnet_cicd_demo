@@ -27,9 +27,9 @@ jobs:
       - name: Build
         run: dotnet build DemoSolution.sln --configuration Release --no-restore
 
-      # 執行單元測試
+      # 執行單元測試 (產生 OpenCover 格式的 coverage 報告)
       - name: Run Tests
-        run: dotnet test DemoWebApi.Tests/DemoWebApi.Tests.csproj --configuration Release --no-build --collect:"XPlat Code Coverage"
+        run: dotnet test DemoWebApi.Tests/DemoWebApi.Tests.csproj --configuration Release --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
       # SonarScanner 安全與品質分析
       - name: SonarCloud Analyze (Security & Quality)
@@ -44,7 +44,7 @@ jobs:
             /o:"${{ secrets.SONAR_ORG }}" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.cobertura.xml"
+            /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml"
 
           dotnet build DemoSolution.sln
 
