@@ -17,7 +17,7 @@ namespace DemoWebApi.Tests
 
             Assert.NotNull(result);
             var items = Assert.IsType<List<string>>(result.Value);
-            Assert.Equal(new List<string> { "Apple", "Banana", "Carrot" }, items);
+            Assert.Equal(new List<string> { "Apple", "Banana", "Carrot", "Dog" }, items);
         }
 
         // 測試以正確的索引取得指定項目（預設第 1 筆應為 "Banana"）
