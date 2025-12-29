@@ -11,7 +11,7 @@ namespace DemoWebApi.Controllers
 
         public SampleController(List<string>? items = null)
         {
-            _items = items ?? new List<string> { "Apple", "Banana", "Carrot", "Dog" };
+            _items = items ?? new List<string> { "Apple", "Banana", "Carrot", "Dog1" };
         }
 
         [HttpGet]
